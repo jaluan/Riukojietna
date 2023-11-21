@@ -1,0 +1,26 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2758
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww20740\viewh14280\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Riukojietna manuscript codes\
+\
+Steps to create plots of cosmogenic nuclide accumulation in Riukojietna samples.\
+\
+1. Run compile_production.m\
+This will prompt you for two input files, first type riuko_CBefin.txt, next type riuko_BeAlfin.txt\
+The code saves a file (RiukoProduction.mat) that contains two structures - \'91consts\'92 which contains various parameters for calculating cosmogenic nuclide production and \'91samples\'92 which contains sample metadata, nuclide concentrations and production parameters for each of the five Riukojietna samples.\
+\
+2. Run show_CN_and_Ice.m\
+This will plot the Riukojietna 14C and 10Be data pairwise for sample 1+2 and 3+4. Next it will produce an ice-history vector and calculate the resulting accumulation of cosmogenic nuclides over time (by calling \'91forward_CN_bedrock.m\'92). For this part I have implemented three methods (switch by setting \'91method\'92 = 1, 2, or 3).\
+1. loading pre-defined ice-histories by calling \'91define_ice_history.m\'92 with an input parameter to switch between three different scenarios (more can easily be added).\
+2. Hard-coding an ice-history directly into the script\
+3. Looping over a variable to plot cosmogenic nuclide accumulation histories for a range of ice histories at once. The variable that is looped can easily be changed.\
+\
+3. Run show_CN_and_Ice_s5.m\
+Same as #2 above, but tailored to test LIA burial for sample site 5.\
+\
+/Jane Lund Andersen, 21.11.2023\
+}
