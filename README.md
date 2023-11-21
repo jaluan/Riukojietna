@@ -1,3 +1,4 @@
 # Riukojietna
-Codes to calculate cosmogenic nuclide production and decay with ice cover and erosion
+Codes to calculate cosmogenic nuclide production and decay with ice cover and erosion.
+
 Codes to create figures in Koester et al., (in prep) ...
