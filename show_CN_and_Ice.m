@@ -15,7 +15,7 @@ set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 
 load RiukoProduction.mat consts samples %created with 'compile_production.m'
-% addpath('Functions','Functions/Spectra/')
+addpath('Functions','Functions/Spectra/')
 
 %% a few variables
 dt = 1; %time step, keep at 1 year
