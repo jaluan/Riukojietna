@@ -1,7 +1,7 @@
 # Riukojietna
 Codes to calculate cosmogenic nuclide production and decay with ice cover and erosion.
 
-Codes to create figures in Koester et al., (in prep) ...
+Codes to create figures in Stroeven et al., (in prep) ...
 
 Steps to create plots of cosmogenic nuclide accumulation in Riukojietna samples.
 
@@ -19,9 +19,5 @@ Method 1: loading pre-defined ice-histories by calling â€˜define_ice_history.mâ€
 Method 2: Hard-coding an ice-history directly into the script
 
 Method 3: Looping over a variable to plot cosmogenic nuclide accumulation histories for a range of ice histories at once. The variable that is looped can easily be changed.
-
-3. Run show_CN_and_Ice_s5.m
-
-Same as #2 above, but tailored to test LIA burial for sample site 5.
 
 /Jane Lund Andersen, 21.11.2023
