@@ -1,7 +1,7 @@
 # Riukojietna
 Codes to calculate cosmogenic nuclide production and decay with ice cover and erosion.
 
-Codes to create figures in Stroeven et al., (in prep) ...
+Codes to create figures in Stroeven, A. P., Rosqvist, G. C., Koester, A. J., Andersen, J. L., Wahlström, C.-A., and Lifton, N. A.: Riukojietna, a small low-altitude ice cap that may have persisted through the Holocene: Evidence from combining cosmogenic multi-nuclide dating and lacustrine sediment records, EGUsphere [preprint], https://doi.org/10.5194/egusphere-2026-447, 2026.
 
 Steps to create plots of cosmogenic nuclide accumulation in Riukojietna samples.
 
@@ -12,16 +12,6 @@ The code saves a file (RiukoProduction.mat) that contains two structures - ‘co
 
 2. Run show_CN_and_Ice.m
 
-This will plot the Riukojietna 14C and 10Be data pairwise for sample 1+2 and 3+4. Next it will produce an ice-history vector and calculate the resulting accumulation of cosmogenic nuclides over time (by calling ‘forward_CN_bedrock.m’). For this part I have implemented three methods (switch by setting ‘method’ = 1, 2, or 3).
+This will plot the Riukojietna 14C and 10Be data pairwise for sample 1+2 and 3+4. Next it will produce an ice-history vector and calculate the resulting accumulation of cosmogenic nuclides over time (by calling ‘forward_CN_bedrock.m’). 
 
-Method 1: loading pre-defined ice-histories by calling ‘define_ice_history.m’ with an input parameter to switch between three different scenarios (more can easily be added).
-
-Method 2: Hard-coding an ice-history directly into the script
-
-Method 3: Looping over a variable to plot cosmogenic nuclide accumulation histories for a range of ice histories at once. The variable that is looped can easily be changed.
-
-3. Run show_CN_and_Ice_s5.m
-
-Same as #2 above, but tailored to test LIA burial for sample site 5.
-
-/Jane Lund Andersen, 21.11.2023
+/Jane Lund Andersen, 09.06.2026
