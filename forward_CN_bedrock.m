@@ -1,4 +1,4 @@
-function [N14C,N10Be,N26Al] = forward_CN_bedrock(ts,ice_hist,Esubgla,sampledata,consts)
+function [N14C,N10Be,N26Al] = forward_CN_bedrock(ts,ice_hist,Esubgla,sampledata,tv,consts)
 
 % This function returns the calculated cosmogenic nuclide inventory 
 % (10Be-26Al-14C) in a surface sample over time as it is subaerially
@@ -12,6 +12,7 @@ function [N14C,N10Be,N26Al] = forward_CN_bedrock(ts,ice_hist,Esubgla,sampledata,
 % compile_production.m file (saved in RiukoProduction.mat);
 % sampledata: sample and production parameters compiled when running the 
 % compile_production.m file (saved in RiukoProduction.mat); 
+% tv: time vector for production vectors
 % ts: time vector; 
 % ice_hist: ice thickness for times in ts; 
 % Esubgla: Subglacial erosion rate [cm/yr], can be set to 0 [Note: 
@@ -27,27 +28,24 @@ function [N14C,N10Be,N26Al] = forward_CN_bedrock(ts,ice_hist,Esubgla,sampledata,
 dc14 = consts.l14; %decay constant for 14C
 dc10 = consts.l10; %decay constant for 10Be
 dc26 = consts.l26; %decay constant for 26Al
-Lsp = 140; %attenuation length for spallation, per Lifton et al., 2014 Table 1
+Lsp = 140; %attenuation length for spallation, Low Rc, per Lifton et al., 2014 Table 1
 rho_ice = 0.92; %g/cm3 density of ice
 rho_br = sampledata.rho; %g/cm3 density of bedrock
 
+
 %% calculate spallation surface production
-P14_sp = sampledata.FSF14_LS.*consts.P14_ref_LS; %spallation production at surface
-P10_sp = sampledata.FSF10_LS.*consts.P10_ref_LS; 
-P26_sp = sampledata.FSF26_LS.*consts.P26_ref_LS;
+P14_sp(:,:) = sampledata.SF14_LS(:,:).*consts.P14_ref_LS; %spallation production at surface
+P10_sp(:,:) = sampledata.SF10_LS(:,:).*consts.P10_ref_LS; 
+P26_sp(:,:) = sampledata.SF26_LS(:,:).*consts.P26_ref_LS;
+
+%% Interpolate scaling factor arrays to ts time vector
+P14_sp2 = interp1(tv.C,P14_sp,ts); %interpolate spallation production at times in time vector
+P10_sp2 = interp1(tv.Be,P10_sp,ts); %interpolate spallation production at times in time vector
+P26_sp2 = interp1(tv.Al,P26_sp,ts); %interpolate spallation production at times in time vector
 
 %% Calculate depth of sample over time as a function of the subglacial 
 % erosion rate (Esubgla) and whether the sample is below ice thicker than:
 erosiveIce=25; %Threshold value for erosive ice (m)
-
-% Slow method:
-% efac = zeros(1,length(ts)); burial = zeros(1,length(ts));
-% efac(ice_hist/1e2>=erosiveIce)=1; %efac=1 if ice erodes, =0 if not
-% for i=1:length(efac) %loop is computationally inefficient, think of a different way
-%     burial(i)=sum(efac(1:end-i))*Esubgla; %Depths at times in 'ts'
-% end
-% burial=abs(fliplr(burial)-max(burial)); %flip and set to zero at present day
-% % Note that the above only works for timestep dt=1a
 
 % Faster method:
 Ise=find(diff(sign(ice_hist/1e2-erosiveIce))); %find indices for subglacial erosion on/off
@@ -85,7 +83,6 @@ Rc=0.032; %Based on consts.PavonRc for 70N, 15E (Riukojietna 68N, 18E) time-aver
 
 % calculate muon production in each timestep under prescribed ice and rock burial depth
 P10_mu_depth = P_mu_total_alpha1(overburden,sampledata.pressure,mconsts,'no');
-% P10_mu_depth = P_mu_totalLSD_jla(overburden,sampledata.pressure,Rc,consts.SPhiInf,mconsts,'no');
 
 %% Muon production with ice depth for Al26
 
@@ -98,7 +95,6 @@ mconsts.mfluxRef = consts.mfluxRef;
 
 % calculate muon production in each timestep under prescribed ice and rock burial depth
 P26_mu_depth = P_mu_total_alpha1(overburden,sampledata.pressure,mconsts,'no');
-% P26_mu_depth = P_mu_totalLSD_jla(overburden,sampledata.pressure,Rc,consts.SPhiInf,mconsts,'no');
 
 %% Muon production with depth for C14
 
@@ -111,12 +107,11 @@ mconsts.mfluxRef = consts.mfluxRef;
 
 % calculate muon production in each timestep under prescribed ice and rock burial depth
 P14_mu_depth = P_mu_total_alpha1(overburden,sampledata.pressure,mconsts,'no');
-% P14_mu_depth = P_mu_totalLSD_jla(overburden,sampledata.pressure,Rc,consts.SPhiInf,mconsts,'no');
 
 %% calculate total production corrected for ice and rock shielding over time
-P10_tot = P10_sp.*exp(-overburden./Lsp) + P10_mu_depth;
-P26_tot = P26_sp.*exp(-overburden./Lsp) + P26_mu_depth;
-P14_tot = P14_sp.*exp(-overburden./Lsp) + P14_mu_depth;
+P10_tot = P10_sp2.*exp(-overburden./Lsp) + P10_mu_depth;
+P26_tot = P26_sp2.*exp(-overburden./Lsp) + P26_mu_depth;
+P14_tot = P14_sp2.*exp(-overburden./Lsp) + P14_mu_depth;
 
 %% preallocate for simulation
 N14C = zeros(size(ts)); %preallocate

@@ -14,13 +14,13 @@ set(groot','defaulttextinterpreter','latex');
 set(groot, 'defaultAxesTickLabelInterpreter','latex'); 
 set(groot, 'defaultLegendInterpreter','latex');
 
-load RiukoProduction.mat consts samples %created with 'compile_production.m'
+load RiukoProduction.mat consts samples tv %created with 'compile_production.m'
 addpath('Functions','Functions/Spectra/')
 
 %% a few variables
 dt = 1; %time step, keep at 1 year
 Esubgla = 0; %No subglacial erosion
-Esubgla1 = 0.008; %Subglacial erosion = 0.01cm/yr = 0.1 mm yr-1 (Hallet et al., 1996).
+Esubgla1 = 0.005; %Subglacial erosion = 0.01cm/yr = 0.1 mm yr-1 (Hallet et al., 1996).
 Tmax = 12; %Sets the max time shown on figures (ka BP) - does not control the model start point
 
 %% initiate figures and plot sample data
@@ -140,124 +140,54 @@ xlabel(t,"Time (ka BP)",'fontsize',16,'interpreter','latex')
 Lstyles={'-','--','-.',':'};
 
 %% Define ice-cover scenarios and calculate nuclide build-up
-method=1; %three different methods implemented, choose 1, 2, or 3 to try them out
-switch method
-    case 1 % Method #1:choose a pre-defined scenario from 'define_ice_history.m'
-        sc=6; % 1=8.2 ka event, 2=complete ice-free at 8.5ka, 3=ice-free at 5ka (LOI), 4=MIS3 exposure?, 5=UMISM, 6=lake record reconstruction
-        [ice_hist,ts] = define_ice_history(sc,dt);
+% Choose a pre-defined scenario from 'define_ice_history.m'
+sc=2; % 1=lake record reconstruction, 2=same as 1 but no mid-Holocene readvance
+[ice_hist,ts] = define_ice_history(sc,dt);
 
-        uCol=[.9 .6 .6]; uCol2=brighten(uCol,-0.5); %colors CN production
+uCol=[.9 .6 .6]; uCol2=brighten(uCol,-0.5); %colors CN production
 
-        % Calculate cosmogenic nuclide inventories over time. [Note: 
-        % calculated with production profile from first sample at each site
-        % only, but they are very similar]
+% Calculate cosmogenic nuclide inventories over time. [Note: 
+% calculated with production profile from first sample at each site
+% only, but they are very similar]
 
-        % sample 1 and 2
-        E=Esubgla; %Choose subglacial erosion rate for sample 1 and 2
-        [b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{1},consts);
-        axes(ax1), yyaxis left
-        patch([ts/1e3 fliplr(ts/1e3)],[0.923*b14C fliplr(1.077*b14C)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-7.7% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
-        plot(ts/1e3,b14C,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
-        yyaxis right
-        plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{1})
-        patch(ax2,[ts/1e3 fliplr(ts/1e3)],[0.966*b10Be fliplr(1.034*b10Be)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-3.4% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
-        plot(ax2,ts/1e3,b10Be,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
-        patch(ax5,[ts/1e3 fliplr(ts/1e3)],[0.931*b26Al fliplr(1.069*b26Al)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-6.9% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
-        plot(ax5,ts/1e3,b26Al,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
-        
-        % sample 3 and 4 no erosion scenario
-        E=Esubgla; %Choose subglacial erosion rate for sample 3 and 4
-        [b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{3},consts);
-        axes(ax3), yyaxis left
-        patch([ts/1e3 fliplr(ts/1e3)],[0.923*b14C fliplr(1.077*b14C)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-7.7% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
-        plot(ts/1e3,b14C,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
-        yyaxis right
-        plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{1})
-        patch(ax4,[ts/1e3 fliplr(ts/1e3)],[0.966*b10Be fliplr(1.034*b10Be)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-3.4% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
-        plot(ax4,ts/1e3,b10Be,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
-        patch(ax6,[ts/1e3 fliplr(ts/1e3)],[0.931*b26Al fliplr(1.069*b26Al)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-6.9% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
-        plot(ax6,ts/1e3,b26Al,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
+% sample 1 and 2
+E=Esubgla; %Choose subglacial erosion rate for sample 1 and 2
+[b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{1},tv,consts);
+axes(ax1), yyaxis left
+patch([ts/1e3 fliplr(ts/1e3)],[0.923*b14C fliplr(1.077*b14C)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-7.7% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
+plot(ts/1e3,b14C,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
+yyaxis right
+plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{1})
+patch(ax2,[ts/1e3 fliplr(ts/1e3)],[0.966*b10Be fliplr(1.034*b10Be)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-3.4% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
+plot(ax2,ts/1e3,b10Be,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
+patch(ax5,[ts/1e3 fliplr(ts/1e3)],[0.931*b26Al fliplr(1.069*b26Al)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-6.9% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
+plot(ax5,ts/1e3,b26Al,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
 
-        % sample 3 and 4 erosion
-        E=Esubgla1; %Choose subglacial erosion rate for sample 3 and 4
-        [b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{3},consts);
-        axes(ax3), yyaxis left
-        plot(ts/1e3,b14C,'color','k','LineWidth',2,'Linestyle',Lstyles{4});
-        line([3.1 3.8],[2.7e5 2.7e5],'color','k','LineWidth',2,'Linestyle',Lstyles{4});
-        text(4,2.7e5,['Subglacial erosion: ' num2str(E*10) ' mm yr$^{-1}$'],...
-        'fontsize',14,'Color',.3*[1 1 1]) %Show info on subgl. erosion
-        yyaxis right
-        plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{4})
-        plot(ax4,ts/1e3,b10Be,'color','k','LineWidth',2,'Linestyle',Lstyles{4});
-        plot(ax6,ts/1e3,b26Al,'color','k','LineWidth',2,'Linestyle',Lstyles{4});
+% sample 3 and 4 no erosion scenario
+E=Esubgla; %Choose subglacial erosion rate for sample 3 and 4
+[b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{3},tv,consts);
+axes(ax3), yyaxis left
+patch([ts/1e3 fliplr(ts/1e3)],[0.923*b14C fliplr(1.077*b14C)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-7.7% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
+plot(ts/1e3,b14C,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
+yyaxis right
+plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{1})
+patch(ax4,[ts/1e3 fliplr(ts/1e3)],[0.966*b10Be fliplr(1.034*b10Be)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-3.4% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
+plot(ax4,ts/1e3,b10Be,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
+patch(ax6,[ts/1e3 fliplr(ts/1e3)],[0.931*b26Al fliplr(1.069*b26Al)],uCol,'EdgeColor','none','FaceAlpha',.8) %+/-6.9% reflecting site-to-site uncertainty on 'fitting parameter' for LSDn scaling
+plot(ax6,ts/1e3,b26Al,'color',uCol2,'LineWidth',1,'Linestyle',Lstyles{1});
 
-
-    case 2 % Method #2: hardcode some values in directly below for quick tests
-        ice_times=[60000 55000 35000 30000 20000 9900 9800 7800 7790 5010 5000 4500 4450 1850 1800 105 55 37 0]; %time fixpoints (years prior to 2015)
-        ice_cover=[100 0 0 100 100 100 35 35 0 0 35 35 0 0 35 35 25 19 0]*100; %Ice thickness at times in ice_times (cm)
-       
-        ts = (ice_times(1)-1):-dt:0; %time vector for calculations
-        ice_hist=interp1(ice_times,ice_cover,ts); %interpolate ice-thickness at times in time vector
-
-        % Calculate cosmogenic nuclide inventories over time, note calculated with 
-        % production profile from first sample only, but they are very similar
-        E=Esubgla; %Choose subglacial erosion rate for sample 1 and 2
-        [b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{1},consts);
-        axes(ax1), plot(ts/1e3,b14C,'k','LineWidth',2);
-%         text(2,2.78e5,['Subglacial erosion: ' num2str(E) ' cm a$^{-1}$'],...
-%         'fontsize',14,'Color',.5*[1 1 1]) %Show info on subgl. erosion
-        yyaxis right
-        plot(ts/1e3,(ice_hist./100),'LineWidth',2)
-        plot(ax2,ts/1e3,b10Be,'k','LineWidth',2);
-        plot(ax5,ts/1e3,b26Al,'k','LineWidth',2);
-
-        E=Esubgla1;  %Choose subglacial erosion rate for sample 3 and 4
-        [b14C,b10Be,~] = forward_CN_bedrock(ts,ice_hist,E,samples{3},consts);
-        axes(ax3), yyaxis left, plot(ts/1e3,b14C,'k','LineWidth',2);
-        text(2,2.7e5,['Subglacial erosion: ' num2str(E*10) ' mm yr$^{-1}$'],...
-            'fontsize',14,'Color',.5*[1 1 1]) %Show info on subgl. erosion
-        yyaxis right
-        plot(ts/1e3,(ice_hist./100),'LineWidth',2)
-        plot(ax4,ts/1e3,b10Be,'k','LineWidth',2);
-        plot(ax6,ts/1e3,b26Al,'k','LineWidth',2);
-
-    case 3 % Method #3: Loop over one variable and plot to examine effect
-%         HTM=[5,6,7,7.9]*1e3; %Beginning of full exposure during Holocene thermal maximum
-        iThick=[11,30,45];
-        for i=1:length(iThick) %(HTM)
-%             ice_times=[20000 8000 HTM(i) 2500 105 55 37 0]; %time fixpoints (years prior to 2015)
-%             ice_cover=[200 35 0 0 35 25 19 0]*100; %Ice thickness at times in ice_times (cm) 
-            ice_times=[20000 9900 9800 7800 7790 5500 5450 4550 4500 1800 1750 105 55 37 0]; %time fixpoints (years prior to 2015)
-            ice_cover=[50 50 iThick(i) iThick(i) 0 0 iThick(i) iThick(i) 0 0 iThick(i) iThick(i) 25 19 0]*100; %Ice thickness at times in ice_times (cm)
-            ts = (ice_times(1)-1):-dt:0; %time vector for calculations
-            ice_hist=interp1(ice_times,ice_cover,ts); %interpolate ice-thickness at times in time vector
-
-            % Calculate cosmogenic nuclide inventories over time, note calculated with 
-            % production profile from first sample only, but they are very similar
-
-            E=Esubgla; %Choose subglacial erosion rate for sample 1 and 2
-            [b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{1},consts);
-            axes(ax1), yyaxis left
-            plot(ts/1e3,b14C,'k','LineWidth',1.5,'Linestyle',Lstyles{i});
-%             text(2,2.78e5,['Subglacial erosion: ' num2str(E) ' cm a$^{-1}$'],...
-%             'fontsize',14,'Color',.5*[1 1 1]) %Show info on subgl. erosion
-            yyaxis right
-            plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{i})
-            plot(ax2,ts/1e3,b10Be,'k','LineWidth',2,'Linestyle',Lstyles{i});
-            plot(ax5,ts/1e3,b26Al,'k','LineWidth',2,'Linestyle',Lstyles{i});
-
-            E=Esubgla; %Choose subglacial erosion rate for sample 3 and 4
-            [b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{3},consts);
-            axes(ax3), yyaxis left
-            plot(ts/1e3,b14C,'k','LineWidth',1.5,'Linestyle',Lstyles{i});
-%             text(2,2.7e5,['Subglacial erosion: ' num2str(E) ' cm a$^{-1}$'],...
-%             'fontsize',14,'Color',.5*[1 1 1]) %Show info on subgl. erosion
-            yyaxis right
-            plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{i})
-            plot(ax4,ts/1e3,b10Be,'k','LineWidth',2,'Linestyle',Lstyles{i});
-            plot(ax6,ts/1e3,b26Al,'k','LineWidth',2,'Linestyle',Lstyles{i});
-        end
-end
+% sample 3 and 4 erosion
+E=Esubgla1; %Choose subglacial erosion rate for sample 3 and 4
+[b14C,b10Be,b26Al] = forward_CN_bedrock(ts,ice_hist,E,samples{3},tv,consts);
+axes(ax3), yyaxis left
+plot(ts/1e3,b14C,'color','k','LineWidth',2,'Linestyle',Lstyles{4});
+line([3.1 3.8],[2.7e5 2.7e5],'color','k','LineWidth',2,'Linestyle',Lstyles{4});
+text(4,2.7e5,['Subglacial erosion: ' num2str(E*10) ' mm yr$^{-1}$'],...
+'fontsize',14,'Color',.3*[1 1 1]) %Show info on subgl. erosion
+yyaxis right
+plot(ts/1e3,(ice_hist./100),'LineWidth',2,'Linestyle',Lstyles{4})
+plot(ax4,ts/1e3,b10Be,'color','k','LineWidth',2,'Linestyle',Lstyles{4});
+    plot(ax6,ts/1e3,b26Al,'color','k','LineWidth',2,'Linestyle',Lstyles{4});
 
 set(gcf,'units','normalized','position',[.2,.3,.6,.6]);
 % print -painters -depsc cosmo_1ero.eps
